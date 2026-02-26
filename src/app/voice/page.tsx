@@ -152,8 +152,8 @@ export default function VoicePage() {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [interimText, setInterimText] = useState("");
     const [model] = useState("openai/gpt-3.5-turbo");
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [transcriptOpen, setTranscriptOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [transcriptOpen, setTranscriptOpen] = useState(false);
     const [webSearchEnabled, setWebSearchEnabled] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
 

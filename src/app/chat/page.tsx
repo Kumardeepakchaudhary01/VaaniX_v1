@@ -80,7 +80,7 @@ export default function ChatPage() {
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [model, setModel] = useState(DEFAULT_MODEL);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [pendingAttachments, setPendingAttachments] = useState<Attachment[]>([]);
     const [webSearchEnabled, setWebSearchEnabled] = useState(false);
