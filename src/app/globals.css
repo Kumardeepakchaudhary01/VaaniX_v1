@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+@plugin "tailwind-scrollbar";
+
+@theme {
+  --color-cosmic-dark: #050510;
+  --color-cosmic-purple: #3a0088;
+  --color-cosmic-blue: #090030;
+  --color-neon-blue: #00f3ff;
+  --color-neon-purple: #b537f2;
+  --color-glass-white: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+}
+
+@layer base {
+  :root {
+    --background: #050510;
+    --foreground: #ffffff;
+  }
+  
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply antialiased overflow-x-hidden;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-glass-white backdrop-blur-md border border-glass-border rounded-2xl shadow-lg;
+  }
+  .glow-text {
+    text-shadow: 0 0 10px var(--color-neon-blue), 0 0 20px var(--color-neon-purple);
+  }
+  .glow-box {
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(181, 55, 242, 0.3);
+  }
+}
