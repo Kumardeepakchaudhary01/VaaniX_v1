@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { MessageSquare, Mic, User, Zap, Shield, Globe, ChevronRight, Star, ArrowRight, Cpu, Brain, Volume2 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -33,14 +33,14 @@ function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-black/70 backdrop-blur-xl border-b border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]" : "bg-transparent"
         }`}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10 flex items-center justify-center">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl rotate-45 group-hover:scale-110 transition-transform duration-300" />
-            <span className="relative text-white font-black text-lg z-10">V</span>
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 group outline-none">
+          <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg sm:rounded-xl rotate-45 group-hover:scale-110 transition-transform duration-300" />
+            <span className="relative text-white font-black text-sm sm:text-lg z-10">V</span>
           </div>
-          <span className="text-2xl font-black tracking-tight">
+          <span className="text-xl sm:text-2xl font-black tracking-tight">
             <span className="text-white">Vaani</span>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">X</span>
           </span>
@@ -74,34 +74,71 @@ function Navbar() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-white p-2"
+          className="md:hidden text-white p-2 outline-none"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <div className="w-5 h-0.5 bg-white mb-1 transition-all" />
-          <div className="w-5 h-0.5 bg-white mb-1 transition-all" />
-          <div className="w-5 h-0.5 bg-white transition-all" />
+          <div className={`w-6 h-0.5 bg-white mb-1.5 transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+          <div className={`w-6 h-0.5 bg-white mb-1.5 transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
+          <div className={`w-4 h-0.5 bg-white ml-auto transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2 w-6" : ""}`} />
         </button>
       </div>
 
       {/* Mobile Menu */}
-      {menuOpen && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 px-6 py-4 flex flex-col gap-2"
-        >
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="py-3 px-4 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 top-0 left-0 w-full h-screen bg-[#070B14]/98 backdrop-blur-2xl z-50 md:hidden flex flex-col p-8"
+          >
+            <div className="flex items-center justify-between mb-12">
+              <Link href="/" className="flex items-center gap-3 group" onClick={() => setMenuOpen(false)}>
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl rotate-45" />
+                  <span className="relative text-white font-black text-lg z-10">V</span>
+                </div>
+                <span className="text-2xl font-black text-white">VaaniX</span>
+              </Link>
+              <button
+                className="text-white p-2"
+                onClick={() => setMenuOpen(false)}
+              >
+                <div className="w-6 h-0.5 bg-white rotate-45 translate-y-[1px]" />
+                <div className="w-6 h-0.5 bg-white -rotate-45 -translate-y-[1px]" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.label}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="text-3xl font-bold text-white hover:text-blue-400 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-auto pb-12">
+              <Link href="/chat" onClick={() => setMenuOpen(false)}>
+                <button className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg shadow-[0_0_30px_rgba(139,92,246,0.3)]">
+                  Get Started Now
+                </button>
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.nav>
   );
 }
@@ -134,7 +171,7 @@ function Hero() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.05] mb-6"
+        className="text-4xl xs:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1] sm:leading-[1.05] mb-6"
       >
         <span className="text-white">The Future of </span>
         <br />
@@ -148,9 +185,9 @@ function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.25 }}
-        className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 font-light leading-relaxed"
+        className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 font-bold leading-relaxed px-4"
       >
-        VaaniX empowers university innovation with intelligent text, voice, and 3D avatar AI interactions — all in one seamless platform.
+        VaaniX is a universal AI platform that delivers intelligent text, voice, and 3D avatar interactions for ANY application — all in one seamless experience.
       </motion.p>
 
       {/* Hero CTA Buttons */}
@@ -158,22 +195,22 @@ function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.4 }}
-        className="flex flex-wrap gap-4 justify-center mb-16"
+        className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center mb-16 px-6 w-full max-w-md sm:max-w-none"
       >
-        <Link href="/chat">
+        <Link href="/chat" className="w-full sm:w-auto">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-base hover:shadow-[0_0_40px_rgba(139,92,246,0.5)] transition-shadow flex items-center gap-2"
+            className="w-full px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-base hover:shadow-[0_0_40px_rgba(139,92,246,0.5)] transition-shadow flex items-center justify-center gap-2"
           >
             Start Chatting <ArrowRight size={18} />
           </motion.button>
         </Link>
-        <Link href="/voice">
+        <Link href="/voice" className="w-full sm:w-auto">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 rounded-xl border border-white/20 bg-white/5 text-white font-bold text-base hover:bg-white/10 transition-all backdrop-blur-sm flex items-center gap-2"
+            className="w-full px-8 py-4 rounded-xl border border-white/20 bg-white/5 text-white font-bold text-base hover:bg-white/10 transition-all backdrop-blur-sm flex items-center justify-center gap-2"
           >
             Try Voice Mode <Mic size={18} />
           </motion.button>
@@ -331,16 +368,16 @@ function FeaturesSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-16"
+        className="text-center mb-12 sm:mb-16"
       >
-        <span className="text-xs uppercase tracking-[0.3em] text-blue-400 font-semibold mb-3 inline-block">Platform Features</span>
-        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+        <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-blue-400 font-semibold mb-3 inline-block">Platform Features</span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 px-2">
           Three Powerful Ways to{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
             Communicate with AI
           </span>
         </h2>
-        <p className="text-gray-400 max-w-xl mx-auto">
+        <p className="text-gray-400 max-w-xl mx-auto px-4 text-sm sm:text-base">
           VaaniX integrates multiple AI interaction modalities into a single, cohesive experience.
         </p>
       </motion.div>
@@ -394,11 +431,11 @@ const whyItems = [
     border: "border-pink-500/20",
   },
   {
-    icon: <Star size={28} />,
-    title: "No Backend Required",
-    description: "Zero server setup. Just add your OpenRouter API key to `.env.local` and run — that's it.",
-    color: "text-orange-400",
-    border: "border-orange-500/20",
+    icon: <Zap size={28} />,
+    title: "Real-Time Intelligence",
+    description: "Live web search powered by OpenRouter gives you current answers with automatic source filtering for clean, natural responses.",
+    color: "text-blue-400",
+    border: "border-blue-500/20",
   },
 ];
 
@@ -410,10 +447,10 @@ function WhySection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-16"
+        className="text-center mb-12 sm:mb-16"
       >
         <span className="text-xs uppercase tracking-[0.3em] text-purple-400 font-semibold mb-3 inline-block">Why VaaniX</span>
-        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4">
           Built Different.{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
             Built Smarter.
@@ -421,7 +458,7 @@ function WhySection() {
         </h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {whyItems.map((item, i) => (
           <motion.div
             key={item.title}
@@ -430,11 +467,11 @@ function WhySection() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, delay: i * 0.1 }}
             whileHover={{ y: -5 }}
-            className={`p-6 rounded-2xl border ${item.border} bg-white/[0.03] backdrop-blur-sm flex flex-col gap-4`}
+            className={`p-5 sm:p-6 rounded-2xl border ${item.border} bg-white/[0.03] backdrop-blur-sm flex flex-col gap-3 sm:gap-4`}
           >
-            <div className={`${item.color} p-3 w-fit rounded-xl bg-white/5`}>{item.icon}</div>
-            <h4 className="text-white font-bold text-lg">{item.title}</h4>
-            <p className="text-gray-400 text-sm leading-relaxed">{item.description}</p>
+            <div className={`${item.color} p-2.5 w-fit rounded-xl bg-white/5`}>{item.icon}</div>
+            <h4 className="text-white font-bold text-base sm:text-lg">{item.title}</h4>
+            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">{item.description}</p>
           </motion.div>
         ))}
       </div>
@@ -453,34 +490,34 @@ function CTABanner() {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
-        className="relative rounded-3xl p-12 text-center overflow-hidden border border-white/10"
+        className="relative rounded-3xl p-8 sm:p-12 text-center overflow-hidden border border-white/10"
         style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(139,92,246,0.15) 50%, rgba(236,72,153,0.1) 100%)" }}
       >
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
         </div>
-        <h2 className="text-3xl md:text-5xl font-black text-white mb-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4">
           Ready to talk to the future?
         </h2>
-        <p className="text-gray-400 mb-8 max-w-lg mx-auto">
+        <p className="text-gray-400 mb-8 max-w-lg mx-auto text-sm sm:text-base px-4">
           Join VaaniX and experience AI communication that goes beyond text — speak, listen, and interact in three dimensions.
         </p>
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Link href="/chat">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center w-full max-w-md mx-auto sm:max-w-none">
+          <Link href="/chat" className="w-full sm:w-auto">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold hover:shadow-[0_0_40px_rgba(139,92,246,0.4)] transition-shadow flex items-center gap-2"
+              className="w-full px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold hover:shadow-[0_0_40px_rgba(139,92,246,0.4)] transition-shadow flex items-center justify-center gap-2"
             >
               Open Chatbot <MessageSquare size={18} />
             </motion.button>
           </Link>
-          <Link href="/avatar">
+          <Link href="/avatar" className="w-full sm:w-auto">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 rounded-xl border border-white/20 bg-white/5 text-white font-bold hover:bg-white/10 transition-all flex items-center gap-2"
+              className="w-full px-8 py-4 rounded-xl border border-white/20 bg-white/5 text-white font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2"
             >
               Meet the Avatar <User size={18} />
             </motion.button>
@@ -496,21 +533,27 @@ function CTABanner() {
 // ─────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="relative z-10 border-t border-white/10 px-6 py-8">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-black">
-            <span className="text-white">Vaani</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">X</span>
+    <footer className="relative z-10 border-t border-white/10 px-4 sm:px-6 py-10 sm:py-12 bg-black/40 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8">
+        <div className="flex items-center gap-3">
+          <span className="text-xl sm:text-2xl font-black group cursor-default">
+            <span className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">Vaani</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)]">X</span>
           </span>
-          <span className="text-gray-600 text-sm">· AI Communication Platform</span>
+          <div className="w-[1px] h-4 bg-white/20 hidden md:block" />
+          <span className="text-gray-300 font-semibold tracking-wide text-[11px] sm:text-sm">Universal AI Platform</span>
         </div>
-        <div className="flex gap-6 text-sm text-gray-500">
-          <Link href="/chat" className="hover:text-gray-300 transition-colors">Chatbot</Link>
-          <Link href="/voice" className="hover:text-gray-300 transition-colors">Voice Chat</Link>
-          <Link href="/avatar" className="hover:text-gray-300 transition-colors">Agent Mode</Link>
+
+        <div className="flex flex-wrap justify-center gap-6 sm:gap-8 text-xs sm:text-sm font-medium">
+          <Link href="/chat" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">Chatbot</Link>
+          <Link href="/voice" className="text-gray-400 hover:text-purple-400 transition-colors duration-300">Voice Chat</Link>
+          <Link href="/avatar" className="text-gray-400 hover:text-pink-400 transition-colors duration-300">Agent Mode</Link>
         </div>
-        <p className="text-gray-600 text-sm">Built with ❤️ for University Project · 2025</p>
+
+        <p className="text-gray-400 text-[11px] sm:text-sm font-semibold flex items-center gap-2">
+          <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500 animate-pulse" />
+          VaaniX · Future of AI
+        </p>
       </div>
     </footer>
   );

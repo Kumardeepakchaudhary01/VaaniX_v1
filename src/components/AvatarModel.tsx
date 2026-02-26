@@ -33,23 +33,39 @@ export default function AvatarModel({ isSpeaking }: { isSpeaking: boolean }) {
 
         // Procedural lip sync/jaw movement
         if (isSpeaking) {
+            // Use slow sine wave for mouth movement (around 8Hz for clear articulation)
+            const mouthValue = 0.4 + Math.sin(time * 12) * 0.5 + Math.sin(time * 7) * 0.1;
+            const clampedMouth = Math.max(0, Math.min(1.2, mouthValue)); // Increased range to "open more"
+
             if (jawBoneRef.current) {
-                // Randomly open and close jaw fast to simulate talking
-                jawBoneRef.current.rotation.x = 0.1 + Math.random() * 0.2;
+                // Slower and wider jaw rotation
+                jawBoneRef.current.rotation.x = THREE.MathUtils.lerp(
+                    jawBoneRef.current.rotation.x,
+                    0.05 + clampedMouth * 0.35,
+                    0.2
+                );
             } else if (headMeshRef.current && headMeshRef.current.morphTargetDictionary && headMeshRef.current.morphTargetInfluences) {
                 const mouthOpenIdx = headMeshRef.current.morphTargetDictionary['mouthOpen'];
                 if (mouthOpenIdx !== undefined) {
-                    headMeshRef.current.morphTargetInfluences[mouthOpenIdx] = Math.random() * 0.8;
+                    headMeshRef.current.morphTargetInfluences[mouthOpenIdx] = THREE.MathUtils.lerp(
+                        headMeshRef.current.morphTargetInfluences[mouthOpenIdx],
+                        clampedMouth,
+                        0.2
+                    );
                 }
             }
         } else {
-            // Close mouth
+            // Smoothly close mouth
             if (jawBoneRef.current) {
-                jawBoneRef.current.rotation.x = THREE.MathUtils.lerp(jawBoneRef.current.rotation.x, 0, 0.2);
+                jawBoneRef.current.rotation.x = THREE.MathUtils.lerp(jawBoneRef.current.rotation.x, 0, 0.1);
             } else if (headMeshRef.current && headMeshRef.current.morphTargetDictionary && headMeshRef.current.morphTargetInfluences) {
                 const mouthOpenIdx = headMeshRef.current.morphTargetDictionary['mouthOpen'];
                 if (mouthOpenIdx !== undefined) {
-                    headMeshRef.current.morphTargetInfluences[mouthOpenIdx] = 0;
+                    headMeshRef.current.morphTargetInfluences[mouthOpenIdx] = THREE.MathUtils.lerp(
+                        headMeshRef.current.morphTargetInfluences[mouthOpenIdx],
+                        0,
+                        0.1
+                    );
                 }
             }
         }

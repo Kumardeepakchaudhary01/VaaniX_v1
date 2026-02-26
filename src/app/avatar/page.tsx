@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import { Canvas } from "@react-three/fiber";
 import { Environment, ContactShadows, OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
 import AvatarModel from "@/components/AvatarModel";
 import { v4 as uuidv4 } from "uuid";
 
@@ -160,26 +161,25 @@ export default function AvatarPage() {
             <div className="flex-1 flex flex-col h-full min-w-0 relative">
 
                 {/* Top bar */}
-                <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] bg-[#0D1117]/90 backdrop-blur-md flex-shrink-0 z-20">
+                <div className="flex items-center justify-between px-3 sm:px-5 py-3 sm:py-3.5 border-b border-white/[0.06] bg-[#0D1117]/90 backdrop-blur-md flex-shrink-0 z-30">
                     {/* Back to Home */}
                     <Link
                         href="/"
-                        className="flex items-center gap-2.5 px-4 py-2 rounded-xl text-gray-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.05] hover:border-white/10 transition-all text-sm group"
+                        className="flex items-center gap-1.5 sm:gap-2.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-gray-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.05] hover:border-white/10 transition-all text-[11px] sm:text-sm group outline-none"
                     >
-                        <div className="w-5 h-5 rounded-md bg-gradient-to-br from-blue-500/30 to-purple-600/30 flex items-center justify-center group-hover:from-blue-500/50 group-hover:to-purple-600/50 transition-all">
-                            <ArrowLeft size={12} className="text-blue-400" />
-                        </div>
-                        Back to Home
+                        <ArrowLeft size={14} className="text-blue-400 sm:w-3 sm:h-3" />
+                        <span className="hidden xs:inline">Back to Home</span>
+                        <span className="xs:hidden">Back</span>
                     </Link>
 
                     {/* Title */}
-                    <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                            <Sparkles size={14} className="text-white" />
+                    <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0">
+                            <Sparkles size={12} className="text-white sm:w-[14px] sm:h-[14px]" />
                         </div>
-                        <div>
-                            <div className="text-white font-semibold text-sm">Agent Mode</div>
-                            <div className="text-[11px] text-gray-500">3D AI Avatar · VaaniX</div>
+                        <div className="min-w-0">
+                            <div className="text-white font-semibold text-xs sm:text-sm truncate">Agent Mode</div>
+                            <div className="text-[9px] sm:text-[11px] text-gray-500 truncate">3D AI Avatar · VaaniX</div>
                         </div>
                     </div>
 
@@ -189,16 +189,16 @@ export default function AvatarPage() {
                             onMouseEnter={() => setHoveringTranscript(true)}
                             onMouseLeave={() => setHoveringTranscript(false)}
                             onClick={() => setTranscriptOpen((p) => !p)}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all text-xs font-medium ${transcriptOpen
+                            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border transition-all text-[10px] sm:text-xs font-medium outline-none ${transcriptOpen
                                 ? "bg-purple-600/20 border-purple-500/30 text-purple-300"
                                 : "bg-white/[0.05] border-white/10 text-gray-400 hover:text-white"}`}
                             title="Toggle transcript"
                         >
-                            {transcriptOpen ? <PanelRightClose size={15} /> : <PanelRightOpen size={15} />}
-                            {transcriptOpen ? "Hide Transcript" : "Transcript"}
+                            {transcriptOpen ? <PanelRightClose size={14} className="sm:w-[15px] sm:h-[15px]" /> : <PanelRightOpen size={14} className="sm:w-[15px] sm:h-[15px]" />}
+                            <span className="hidden xs:inline">{transcriptOpen ? "Hide Transcript" : "Transcript"}</span>
                         </button>
 
-                        {/* Hover tooltip preview */}
+                        {/* Hover tooltip preview (Desktop only) */}
                         <AnimatePresence>
                             {hoveringTranscript && !transcriptOpen && transcript.length > 0 && (
                                 <motion.div
@@ -206,7 +206,7 @@ export default function AvatarPage() {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: -8, scale: 0.95 }}
                                     transition={{ duration: 0.15 }}
-                                    className="absolute right-0 top-full mt-2 w-72 bg-[#141B2D] border border-white/10 rounded-2xl shadow-2xl p-3 z-50"
+                                    className="absolute right-0 top-full mt-2 w-72 bg-[#141B2D] border border-white/10 rounded-2xl shadow-2xl p-3 z-50 hidden lg:block"
                                 >
                                     <div className="text-[11px] text-purple-400 font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5">
                                         <Volume2 size={11} /> Live Transcript Preview
@@ -226,14 +226,14 @@ export default function AvatarPage() {
                 </div>
 
                 {/* 3D Avatar + Input */}
-                <div className="flex-1 flex flex-col min-h-0">
+                <div className="flex-1 flex flex-col min-h-0 bg-[radial-gradient(circle_at_center,_#0a1a3a_0%,_#070B14_100%)]">
 
                     {/* 3D Canvas — takes most of the vertical space */}
                     <div className="flex-1 relative min-h-0">
                         {/* Ambient bg glow */}
                         <div className="absolute inset-0 pointer-events-none">
                             <motion.div
-                                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full"
+                                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] h-[150px] sm:h-[300px] rounded-full"
                                 style={{ background: "radial-gradient(ellipse, rgba(139,92,246,0.08), transparent 70%)" }}
                                 animate={isSpeaking ? { opacity: [0.5, 1, 0.5] } : { opacity: 0.5 }}
                                 transition={{ duration: 2, repeat: Infinity }}
@@ -243,6 +243,18 @@ export default function AvatarPage() {
                         <Canvas
                             camera={{ position: [0, 0.5, 3.5], fov: 45 }}
                             className="w-full h-full"
+                            onCreated={({ camera }) => {
+                                // Responsive camera adjustment
+                                const pc = camera as THREE.PerspectiveCamera;
+                                if (window.innerWidth < 768) {
+                                    pc.position.set(0, 0.4, 4.5);
+                                    pc.fov = 40;
+                                } else {
+                                    pc.position.set(0, 0.5, 3.5);
+                                    pc.fov = 45;
+                                }
+                                pc.updateProjectionMatrix();
+                            }}
                         >
                             <Environment preset="city" />
                             <ambientLight intensity={0.5} />
@@ -267,10 +279,10 @@ export default function AvatarPage() {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
-                                    className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-sm text-white"
+                                    className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[11px] sm:text-sm text-white z-10"
                                 >
                                     <motion.div
-                                        className={`w-2 h-2 rounded-full ${isRecording ? "bg-red-500" : isSpeaking ? "bg-purple-500" : "bg-blue-500"}`}
+                                        className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${isRecording ? "bg-red-500" : isSpeaking ? "bg-purple-500" : "bg-blue-500"}`}
                                         animate={{ opacity: [1, 0.3, 1] }}
                                         transition={{ duration: 0.7, repeat: Infinity }}
                                     />
@@ -281,21 +293,21 @@ export default function AvatarPage() {
                     </div>
 
                     {/* Input box */}
-                    <div className="flex-shrink-0 px-6 py-4 border-t border-white/[0.06] bg-[#0D1117]/80 backdrop-blur-md">
+                    <div className="flex-shrink-0 px-3 sm:px-6 py-3 sm:py-4 border-t border-white/[0.06] bg-[#0D1117]/80 backdrop-blur-md z-20">
                         <div className="max-w-3xl mx-auto">
-                            <div className="flex items-center gap-3 bg-[#141B2D] border border-white/[0.08] rounded-2xl px-4 py-3 focus-within:border-purple-500/40 focus-within:shadow-[0_0_20px_rgba(139,92,246,0.1)] transition-all">
+                            <div className="flex items-center gap-2 sm:gap-3 bg-[#141B2D] border border-white/[0.08] rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 focus-within:border-purple-500/40 focus-within:shadow-[0_0_20px_rgba(139,92,246,0.1)] transition-all">
 
                                 {/* Mic button */}
                                 <motion.button
                                     whileHover={{ scale: 1.08 }}
                                     whileTap={{ scale: 0.92 }}
                                     onClick={toggleRecording}
-                                    className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isRecording
+                                    className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all outline-none ${isRecording
                                         ? "bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]"
                                         : "bg-white/[0.06] text-gray-400 hover:bg-purple-600/20 hover:text-purple-300 border border-white/10"}`}
                                     title={isRecording ? "Stop recording" : "Start voice input"}
                                 >
-                                    {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
+                                    {isRecording ? <MicOff size={16} /> : <Mic size={16} />}
                                 </motion.button>
 
                                 {/* Textarea */}
@@ -304,10 +316,10 @@ export default function AvatarPage() {
                                     value={input}
                                     onChange={handleTextareaChange}
                                     onKeyDown={handleKeyDown}
-                                    placeholder="Ask your 3D agent anything..."
+                                    placeholder="Ask anything..."
                                     rows={1}
                                     disabled={isLoading}
-                                    className="flex-1 bg-transparent text-white text-sm placeholder-gray-600 resize-none focus:outline-none leading-relaxed max-h-28 scrollbar-thin scrollbar-thumb-white/10 disabled:opacity-50"
+                                    className="flex-1 bg-transparent text-white text-xs sm:text-sm placeholder-gray-600 resize-none focus:outline-none leading-relaxed max-h-28 scrollbar-thin scrollbar-thumb-white/10 disabled:opacity-50 outline-none"
                                     style={{ height: "auto" }}
                                 />
 
@@ -317,8 +329,8 @@ export default function AvatarPage() {
                                     whileTap={{ scale: 0.95 }}
                                     onClick={handleSend}
                                     disabled={!input.trim() || isLoading}
-                                    className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all"
-                                    title="Send"
+                                    className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all outline-none"
+                                    title="Send message"
                                 >
                                     {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                                 </motion.button>
@@ -329,93 +341,102 @@ export default function AvatarPage() {
             </div>
 
             {/* ── RIGHT TRANSCRIPT PANEL ── */}
-            <AnimatePresence initial={false}>
+            <AnimatePresence>
                 {transcriptOpen && (
-                    <motion.aside
-                        key="transcript"
-                        initial={{ width: 0, opacity: 0 }}
-                        animate={{ width: 320, opacity: 1 }}
-                        exit={{ width: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="flex-shrink-0 flex flex-col h-full overflow-hidden border-l border-white/[0.06] bg-[#0D1117]"
-                        style={{ minWidth: 0 }}
-                    >
-                        {/* Panel header */}
-                        <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.06]">
-                            <div className="flex items-center gap-2 text-purple-400">
-                                <FileText size={16} />
-                                <span className="font-semibold text-sm tracking-wide uppercase">Live Transcript</span>
+                    <>
+                        {/* Backdrop overlay for mobile */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setTranscriptOpen(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[40] lg:hidden"
+                        />
+                        <motion.aside
+                            key="transcript"
+                            initial={{ x: "100%", opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: "100%", opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="fixed lg:relative inset-y-0 right-0 w-[300px] sm:w-[320px] z-[50] flex flex-col h-full overflow-hidden border-l border-white/[0.06] bg-[#0D1117]"
+                        >
+                            {/* Panel header */}
+                            <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.06]">
+                                <div className="flex items-center gap-2 text-purple-400">
+                                    <FileText size={16} />
+                                    <span className="font-semibold text-sm tracking-wide uppercase">Live Transcript</span>
+                                </div>
+                                <button
+                                    onClick={() => setTranscriptOpen(false)}
+                                    className="text-gray-600 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all outline-none"
+                                    title="Close"
+                                >
+                                    <PanelRightClose size={16} />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setTranscriptOpen(false)}
-                                className="text-gray-600 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all"
-                                title="Close"
-                            >
-                                <PanelRightClose size={16} />
-                            </button>
-                        </div>
 
-                        {/* Entries */}
-                        <div ref={transcriptScrollRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-3 scrollbar-thin scrollbar-thumb-white/10">
-                            <AnimatePresence initial={false}>
-                                {transcript.map((entry) => (
-                                    <motion.div
-                                        key={entry.id}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.3 }}
-                                        className={`flex gap-2.5 ${entry.role === "user" ? "justify-end" : "justify-start"}`}
-                                    >
-                                        {entry.role === "ai" && (
-                                            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                <Bot size={12} className="text-white" />
+                            {/* Entries */}
+                            <div ref={transcriptScrollRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-3 scrollbar-thin scrollbar-thumb-white/10">
+                                <AnimatePresence initial={false}>
+                                    {transcript.map((entry) => (
+                                        <motion.div
+                                            key={entry.id}
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className={`flex gap-2.5 ${entry.role === "user" ? "justify-end" : "justify-start"}`}
+                                        >
+                                            {entry.role === "ai" && (
+                                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                    <Bot size={12} className="text-white" />
+                                                </div>
+                                            )}
+                                            <div className={`max-w-[85%] sm:max-w-[80%] flex flex-col gap-1 ${entry.role === "user" ? "items-end" : "items-start"}`}>
+                                                <div className={`px-3 py-2 rounded-xl text-xs leading-relaxed ${entry.role === "user"
+                                                    ? "bg-gradient-to-br from-blue-600/80 to-purple-700/80 text-white rounded-tr-sm shadow-sm"
+                                                    : "bg-[#141B2D] border border-white/[0.07] text-gray-300 rounded-tl-sm shadow-sm"}`}>
+                                                    {entry.text}
+                                                </div>
+                                                <span className="text-[10px] text-gray-600 px-1">{formatTime(entry.timestamp)}</span>
                                             </div>
-                                        )}
-                                        <div className={`max-w-[80%] flex flex-col gap-1 ${entry.role === "user" ? "items-end" : "items-start"}`}>
-                                            <div className={`px-3 py-2 rounded-xl text-xs leading-relaxed ${entry.role === "user"
-                                                ? "bg-gradient-to-br from-blue-600/80 to-purple-700/80 text-white rounded-tr-sm"
-                                                : "bg-[#141B2D] border border-white/[0.07] text-gray-300 rounded-tl-sm"}`}>
-                                                {entry.text}
-                                            </div>
-                                            <span className="text-[10px] text-gray-600 px-1">{formatTime(entry.timestamp)}</span>
+                                            {entry.role === "user" && (
+                                                <div className="w-6 h-6 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5 border border-white/10">
+                                                    <User size={12} className="text-gray-300" />
+                                                </div>
+                                            )}
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+
+                                {/* Loading */}
+                                {isLoading && (
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2.5 justify-start">
+                                        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0">
+                                            <Bot size={12} className="text-white" />
                                         </div>
-                                        {entry.role === "user" && (
-                                            <div className="w-6 h-6 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5 border border-white/10">
-                                                <User size={12} className="text-gray-300" />
-                                            </div>
-                                        )}
+                                        <div className="px-3 py-2 rounded-xl rounded-tl-sm bg-[#141B2D] border border-white/[0.07] flex items-center gap-1.5 shadow-sm">
+                                            <Loader2 size={12} className="animate-spin text-blue-400" />
+                                            <span className="text-xs text-gray-500">Thinking...</span>
+                                        </div>
                                     </motion.div>
-                                ))}
-                            </AnimatePresence>
-
-                            {/* Loading */}
-                            {isLoading && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2.5 justify-start">
-                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0">
-                                        <Bot size={12} className="text-white" />
-                                    </div>
-                                    <div className="px-3 py-2 rounded-xl rounded-tl-sm bg-[#141B2D] border border-white/[0.07] flex items-center gap-1.5">
-                                        <Loader2 size={12} className="animate-spin text-blue-400" />
-                                        <span className="text-xs text-gray-500">Thinking...</span>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </div>
-
-                        {/* Status footer */}
-                        <div className="px-4 py-3 border-t border-white/[0.06] bg-black/20">
-                            <div className="flex items-center gap-2">
-                                <motion.div
-                                    className={`w-2 h-2 rounded-full ${isRecording ? "bg-red-500" : isSpeaking ? "bg-purple-500" : isLoading ? "bg-blue-500" : "bg-gray-600"}`}
-                                    animate={(isRecording || isSpeaking || isLoading) ? { opacity: [1, 0.3, 1] } : { opacity: 1 }}
-                                    transition={{ duration: 0.8, repeat: Infinity }}
-                                />
-                                <span className="text-[11px] text-gray-500">
-                                    {isRecording ? "Listening..." : isLoading ? "AI thinking..." : isSpeaking ? "Agent speaking..." : "Ready"}
-                                </span>
+                                )}
                             </div>
-                        </div>
-                    </motion.aside>
+
+                            {/* Status footer */}
+                            <div className="px-4 py-3 border-t border-white/[0.06] bg-black/40 backdrop-blur-md">
+                                <div className="flex items-center gap-2">
+                                    <motion.div
+                                        className={`w-2 h-2 rounded-full ${isRecording ? "bg-red-500" : isSpeaking ? "bg-purple-500" : isLoading ? "bg-blue-500" : "bg-gray-600"}`}
+                                        animate={(isRecording || isSpeaking || isLoading) ? { opacity: [1, 0.3, 1] } : { opacity: 1 }}
+                                        transition={{ duration: 0.8, repeat: Infinity }}
+                                    />
+                                    <span className="text-[11px] text-gray-500">
+                                        {isRecording ? "Listening..." : isLoading ? "AI thinking..." : isSpeaking ? "Agent speaking..." : "Ready"}
+                                    </span>
+                                </div>
+                            </div>
+                        </motion.aside>
+                    </>
                 )}
             </AnimatePresence>
         </div>
