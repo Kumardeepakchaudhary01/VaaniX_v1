@@ -151,6 +151,7 @@ export default function VoicePage() {
     const [isRecording, setIsRecording] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [interimText, setInterimText] = useState("");
+    const interimTextRef = useRef("");
     const [model] = useState("openai/gpt-3.5-turbo");
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [transcriptOpen, setTranscriptOpen] = useState(false);
@@ -160,6 +161,8 @@ export default function VoicePage() {
     const recognitionRef = useRef<any>(null);
     const isRecordingRef = useRef(false);
     const transcriptScrollRef = useRef<HTMLDivElement>(null);
+    const accumulatedTranscriptRef = useRef("");
+    const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     const activeSession = sessions.find((s) => s.id === activeSessionId);
     const entries = activeSession?.entries ?? [];
@@ -304,27 +307,60 @@ export default function VoicePage() {
         const rec = recognitionRef.current;
         if (!rec) return;
 
-        rec.onresult = (event: any) => {
-            let interim = ""; let final = "";
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                if (event.results[i].isFinal) final += event.results[i][0].transcript;
-                else interim += event.results[i][0].transcript;
+        const handleFinalSubmission = () => {
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+
+            const finalQuestion = (accumulatedTranscriptRef.current + " " + interimTextRef.current).trim();
+            if (finalQuestion) {
+                addEntry("user", finalQuestion);
+                fetchAIResponse(finalQuestion);
             }
+
+            accumulatedTranscriptRef.current = "";
+            interimTextRef.current = "";
+            setInterimText("");
+
+            isRecordingRef.current = false;
+            setIsRecording(false);
+            try { rec.stop(); } catch { }
+        };
+
+        rec.onresult = (event: any) => {
+            let interim = "";
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    accumulatedTranscriptRef.current += event.results[i][0].transcript + " ";
+                } else {
+                    interim += event.results[i][0].transcript;
+                }
+            }
+
+            interimTextRef.current = interim; // Use a ref to track current interim for submission
             setInterimText(interim);
-            if (final) {
-                addEntry("user", final);
-                setInterimText("");
-                try { rec.stop(); } catch { }
-                isRecordingRef.current = false;
-                setIsRecording(false);
-                fetchAIResponse(final);
+
+            // Reset silence timer
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+            silenceTimerRef.current = setTimeout(() => {
+                if (isRecordingRef.current) {
+                    handleFinalSubmission();
+                }
+            }, 2000); // 2 seconds of silence triggers submission
+        };
+
+        rec.onerror = () => {
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+            isRecordingRef.current = false;
+            setIsRecording(false);
+        };
+
+        rec.onend = () => {
+            if (isRecordingRef.current) {
+                try { rec.start(); } catch { }
             }
         };
 
-        rec.onerror = () => { isRecordingRef.current = false; setIsRecording(false); };
-        rec.onend = () => {
-            if (isRecordingRef.current) try { rec.start(); } catch { }
-        };
+        // Expose stop to toggleRecording
+        (rec as any).manualStop = handleFinalSubmission;
     });
 
 
@@ -334,13 +370,23 @@ export default function VoicePage() {
         if (!isRecordingRef.current) {
             window.speechSynthesis?.cancel();
             setIsSpeaking(false);
+
+            accumulatedTranscriptRef.current = "";
+            interimTextRef.current = "";
+            setInterimText("");
+
             isRecordingRef.current = true;
             setIsRecording(true);
             try { rec.start(); } catch { }
         } else {
-            isRecordingRef.current = false;
-            setIsRecording(false);
-            try { rec.stop(); } catch { }
+            // Manual stop: trigger immediate submission
+            if ((rec as any).manualStop) {
+                (rec as any).manualStop();
+            } else {
+                isRecordingRef.current = false;
+                setIsRecording(false);
+                try { rec.stop(); } catch { }
+            }
         }
     };
 

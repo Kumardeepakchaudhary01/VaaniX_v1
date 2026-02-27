@@ -215,6 +215,15 @@ function Hero() {
             Try Voice Mode <Mic size={18} />
           </motion.button>
         </Link>
+        <Link href="/avatar" className="w-full sm:w-auto">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full px-8 py-4 rounded-xl border border-pink-500/30 bg-pink-500/10 text-pink-300 font-bold text-base hover:bg-pink-500/20 transition-all backdrop-blur-sm flex items-center justify-center gap-2"
+          >
+            Launch Agent <User size={18} />
+          </motion.button>
+        </Link>
       </motion.div>
 
       {/* Stats Row */}
@@ -513,11 +522,20 @@ function CTABanner() {
               Open Chatbot <MessageSquare size={18} />
             </motion.button>
           </Link>
-          <Link href="/avatar" className="w-full sm:w-auto">
+          <Link href="/voice" className="w-full sm:w-auto">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="w-full px-8 py-4 rounded-xl border border-white/20 bg-white/5 text-white font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+            >
+              Try Voice Mode <Mic size={18} />
+            </motion.button>
+          </Link>
+          <Link href="/avatar" className="w-full sm:w-auto">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full px-8 py-4 rounded-xl border border-pink-500/30 bg-pink-500/10 text-pink-300 font-bold hover:bg-pink-500/20 transition-all flex items-center justify-center gap-2"
             >
               Meet the Avatar <User size={18} />
             </motion.button>
