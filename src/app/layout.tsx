@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import CosmicBackground from "@/components/CosmicBackground";
 
-const outfit = Outfit({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "VaaniX - AI Communication Platform",
@@ -17,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.className} bg-background text-foreground antialiased min-h-screen flex flex-col`}>
+      <body className={`${inter.className} ${outfit.variable} ${inter.variable} bg-background text-foreground antialiased min-h-screen flex flex-col`}>
         <CosmicBackground />
         {children}
       </body>
